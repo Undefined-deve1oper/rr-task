@@ -1,4 +1,3 @@
-import React from "react";
 import {
     Navigate,
     NavLink,
@@ -7,9 +6,12 @@ import {
     useRoutes
 } from "react-router-dom";
 
-const App = () => {
+function App() {
     const routes = useRoutes([
-        { path: "/", element: <MainPage /> },
+        {
+            path: "/",
+            element: <MainPage />
+        },
         {
             path: "users",
             element: <UsersLayout />,
@@ -20,7 +22,7 @@ const App = () => {
                     element: <Outlet />,
                     children: [
                         { path: "profile", element: <UserProfilePage /> },
-                        { path: "edit", element: <UserEditPage /> },
+                        { path: "edit", element: <EditUserPage /> },
                         { index: true, element: <Navigate to="./profile" /> },
                         { path: "*", element: <Navigate to="../profile" /> }
                     ]
@@ -29,89 +31,81 @@ const App = () => {
         },
         { path: "*", element: <Navigate to="/" /> }
     ]);
-
     return (
-        <div>
-            <h1>App</h1>
+        <div className="App">
+            <h1> App Layout</h1>
+            <NavLink to="/users">Users list Page</NavLink>
             {routes}
         </div>
     );
-};
-const MainPage = () => {
-    return (
-        <div>
-            <h1>MainPage</h1>
-            <NavLink to={`/users`}>Users List Page</NavLink>
-        </div>
-    );
-};
-const UsersLayout = () => {
+}
+function MainPage() {
+    return <h1>MainPage</h1>;
+}
+function UsersLayout() {
+    // const { path } = useRouteMatch();
     return (
         <div>
             <h1>Users Layout</h1>
-            <NavLink to={`/`}>Main Page</NavLink>
+            <NavLink to="/">Main Page</NavLink>
             <Outlet />
         </div>
     );
-};
-
-const UserListPage = () => {
+}
+function UserListPage() {
+    // const { path } = useRouteMatch();
     return (
         <div>
-            <h1>User List Page</h1>
+            <h1> User List Page</h1>
             <ul>
                 {new Array(5).fill("").map((_, index) => (
-                    <li key={"user_" + index}>
-                        <NavLink to={index + "/profile"}>user {index}</NavLink>
+                    <li key={"user_list_component_" + index}>
+                        <NavLink to={index + "/profile"}>User {index}</NavLink>
                     </li>
                 ))}
             </ul>
         </div>
     );
-};
-
-const UserProfilePage = () => {
+}
+function UserProfilePage() {
     const { userId } = useParams();
-
     return (
         <div>
             <h1>UserPage</h1>
-            <p>userId: {userId}</p>
             <ul>
+                <li>
+                    <NavLink to="/users">Users List page</NavLink>
+                </li>
                 <li>
                     <NavLink to={`/users/${userId}/edit`}>
-                        Edit this User
+                        Edit this user
                     </NavLink>
                 </li>
-                <li>
-                    <NavLink to={`/users`}>Users List Page</NavLink>
-                </li>
             </ul>
+            <p> userId:{userId}</p>
         </div>
     );
-};
-
-const UserEditPage = () => {
+}
+function EditUserPage() {
     const { userId } = useParams();
-
     return (
         <div>
-            <h1>UserEditPage</h1>
+            <h1>Edit User Page</h1>
             <ul>
                 <li>
-                    <NavLink to={`/users/${userId}`}>User Profile Page</NavLink>
+                    <NavLink to={"/users/" + userId}>User profile Page</NavLink>
                 </li>
                 <li>
-                    <NavLink to={`/users/${Number(userId) + 1}`}>
+                    <NavLink to={"/users/" + (Number(userId) + 1)}>
+                        {" "}
                         Another User
                     </NavLink>
                 </li>
                 <li>
-                    <NavLink to={`/users`}>Users List Page</NavLink>
+                    <NavLink to={"/users"}> Users List page</NavLink>
                 </li>
             </ul>
         </div>
     );
-};
-
+}
 export default App;
