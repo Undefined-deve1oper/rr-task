@@ -1,24 +1,39 @@
 import React from "react";
 import {
-    Link,
+    Navigate,
     NavLink,
-    Redirect,
-    Route,
-    Switch,
-    useHistory,
-    useLocation,
+    Outlet,
     useParams,
-    useRouteMatch
+    useRoutes
 } from "react-router-dom";
 
 const App = () => {
+    const routes = useRoutes([
+        { path: "/", element: <MainPage /> },
+        {
+            path: "users",
+            element: <UsersLayout />,
+            children: [
+                { index: true, element: <UserListPage /> },
+                {
+                    path: ":userId",
+                    element: <Outlet />,
+                    children: [
+                        { path: "profile", element: <UserProfilePage /> },
+                        { path: "edit", element: <UserEditPage /> },
+                        { index: true, element: <Navigate to="./profile" /> },
+                        { path: "*", element: <Navigate to="../profile" /> }
+                    ]
+                }
+            ]
+        },
+        { path: "*", element: <Navigate to="/" /> }
+    ]);
+
     return (
         <div>
-            <Switch>
-                <Route path="/" exact component={MainPage} />
-                <Route path="/users" component={UsersLayout} />
-                <Redirect to="/" />
-            </Switch>
+            <h1>App</h1>
+            {routes}
         </div>
     );
 };
@@ -31,38 +46,27 @@ const MainPage = () => {
     );
 };
 const UsersLayout = () => {
-    const { path } = useRouteMatch();
     return (
         <div>
             <h1>Users Layout</h1>
             <NavLink to={`/`}>Main Page</NavLink>
-            <Switch>
-                <Route path={path} exact component={UserListPage} />
-                <Route
-                    path={path + "/:userId/profile"}
-                    component={UserProfilePage}
-                />
-                <Route path={path + "/:userId/edit"} component={UserEditPage} />
-                <Redirect
-                    from={path + "/:userId"}
-                    to={path + "/:userId/profile"}
-                />
-            </Switch>
+            <Outlet />
         </div>
     );
 };
 
 const UserListPage = () => {
-    const { path } = useRouteMatch();
-
     return (
-        <ul>
-            {new Array(5).fill("").map((_, index) => (
-                <li key={"user_" + index}>
-                    <NavLink to={`${path}/${index}`}>user {index}</NavLink>
-                </li>
-            ))}
-        </ul>
+        <div>
+            <h1>User List Page</h1>
+            <ul>
+                {new Array(5).fill("").map((_, index) => (
+                    <li key={"user_" + index}>
+                        <NavLink to={index + "/profile"}>user {index}</NavLink>
+                    </li>
+                ))}
+            </ul>
+        </div>
     );
 };
 
